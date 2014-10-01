@@ -151,7 +151,7 @@ public class JcrTemplate extends JcrAccessor implements JcrOperations {
 			 */
 			@Override
 			public Object doInJcr(Session session) throws RepositoryException {
-				session.addLockToken(lock);
+				session.getWorkspace().getLockManager().addLockToken(lock);
 				return null;
 			}
 		}, true);
@@ -237,7 +237,7 @@ public class JcrTemplate extends JcrAccessor implements JcrOperations {
 			 */
 			@Override
 			public Object doInJcr(Session session) throws RepositoryException {
-				return session.getLockTokens();
+				return session.getWorkspace().getLockManager().getLockTokens();
 			}
 		}, true);
 	}
@@ -305,7 +305,7 @@ public class JcrTemplate extends JcrAccessor implements JcrOperations {
 			 */
 			@Override
 			public Object doInJcr(Session session) throws RepositoryException {
-				return session.getNodeByUUID(uuid);
+				return session.getNodeByIdentifier(uuid);
 			}
 		}, true);
 	}
@@ -430,7 +430,7 @@ public class JcrTemplate extends JcrAccessor implements JcrOperations {
 			 */
 			@Override
 			public Object doInJcr(Session session) throws RepositoryException {
-				session.removeLockToken(lt);
+				session.getWorkspace().getLockManager().removeLockToken(lt);
 				return null;
 			}
 		}, true);
