@@ -16,6 +16,7 @@
 package org.springmodules.jcr.jackrabbit;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
@@ -47,7 +48,7 @@ public class SpringSecurityTests extends AbstractTransactionalSpringContextTests
 	 */
 	protected void onSetUpBeforeTransaction() throws Exception {
 		SecurityContextHolder.getContext().setAuthentication(
-				new TestingAuthenticationToken(new Object(), new Object(), new GrantedAuthority[] {}));
+				new TestingAuthenticationToken(new Object(), new Object(), new ArrayList<GrantedAuthority>()));
 
 	}
 
