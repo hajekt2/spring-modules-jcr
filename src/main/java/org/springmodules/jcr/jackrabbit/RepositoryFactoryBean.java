@@ -16,6 +16,10 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.xml.sax.InputSource;
 
+import java.util.Properties;
+
+import static org.apache.jackrabbit.core.config.RepositoryConfigurationParser.REPOSITORY_HOME_VARIABLE;
+
 /**
  * FactoryBean for creating a JackRabbit (JCR-170) repository through Spring configuration files. Use this factory bean
  * when you have to manually configure the repository; for retrieving the repository from JNDI use the
@@ -46,6 +50,11 @@ public class RepositoryFactoryBean extends org.springmodules.jcr.RepositoryFacto
 	 */
 	private RepositoryConfig repositoryConfig;
 
+    /**
+     * Variables used for variable substitution when repository config is parsed
+     */
+    private Properties variables;
+
 	/**
 	 * @return Returns the repository home directory.
 	 */
@@ -74,9 +83,17 @@ public class RepositoryFactoryBean extends org.springmodules.jcr.RepositoryFacto
 		this.repositoryConfig = repositoryConfig;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springmodules.jcr.RepositoryFactoryBean#createRepository()
-	 */
+    /**
+     *
+     * @param variables The variables to use for variable substitution during repository config parsing
+     */
+    public void setVariables(Properties variables) {
+        this.variables = variables;
+    }
+
+    /* (non-Javadoc)
+         * @see org.springmodules.jcr.RepositoryFactoryBean#createRepository()
+         */
 	@Override
 	protected Repository createRepository() throws Exception {
 		// return JackRabbit repository.
@@ -111,10 +128,14 @@ public class RepositoryFactoryBean extends org.springmodules.jcr.RepositoryFacto
 		if (log.isDebugEnabled()) {
 			log.debug("Creating repository configuration: homeDir=" + homeDir + ", configuration=" + configuration);
 		}
-		
-		this.repositoryConfig = RepositoryConfig.create(
-				new InputSource(configuration.getInputStream()),
-				homeDir.getFile().getAbsolutePath());
+
+        if (variables == null) {
+            variables = new Properties(System.getProperties());
+        }
+
+        variables.setProperty(REPOSITORY_HOME_VARIABLE, homeDir.getFile().getAbsolutePath());
+
+		this.repositoryConfig = RepositoryConfig.create(new InputSource(configuration.getInputStream()), variables);
 	}
 
 	/* (non-Javadoc)
